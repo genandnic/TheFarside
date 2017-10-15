@@ -1,0 +1,15 @@
+version: 1.0
+name: TheFarside
+main: com.genandnic.server.Main
+
+commands:
+  encase:
+    description: Traps the specified player in bedrock
+    usage: /encase <player>
+    permission: Operator
+  kill:
+    description: Kills the player
+  die:
+    description: Kills the player
+  suicide:
+    description: Kills the player

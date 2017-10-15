@@ -1,0 +1,10 @@
+customRecipes: true
+silkSpawners: true
+goldenArmor: true
+sneakyArmor: true
+bombArrows:  true
+lightningArrows: true
+multishotBow: true
+dropPlayerHeads: true
+piggybackRides: true
+hideSpectators: true
