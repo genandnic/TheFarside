@@ -1,9 +1,9 @@
 package com.genandnic.server;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
@@ -40,6 +40,10 @@ public class Main extends JavaPlugin {
 	public void onDisable() {
 
 		getServer().clearRecipes();
+		if (config.getBoolean("speedyShulkers"))
+			SpeedyShulkers.saveShulkerBoxes();
+		if (config.getBoolean("globalEnderChest"))
+			GlobalEnderChest.saveEnderChests();
 
 	}
 
@@ -58,6 +62,9 @@ public class Main extends JavaPlugin {
 	private void registerEvents() {
 		PluginManager pm = getServer().getPluginManager();
 
+		pm.registerEvents(new Kill(), this);
+		pm.registerEvents(new Miscellaneous(this), this);
+
 		if (config.getBoolean("silkSpawners"))
 			pm.registerEvents(new MobSpawner(), this);
 		if (config.getBoolean("bombArrows"))
@@ -72,16 +79,19 @@ public class Main extends JavaPlugin {
 			pm.registerEvents(new ArmorListener(), this);
 			pm.registerEvents(new SneakyArmor(this), this);
 		}
-
-		pm.registerEvents(new Kill(), this);
-		pm.registerEvents(new PlayerEvent(this), this);
+		if (config.getBoolean("conveyorBelts"))
+			pm.registerEvents(new ConveyorBelts(this), this);
+		if (config.getBoolean("speedyShulkers"))
+			pm.registerEvents(new SpeedyShulkers(), this);
+		if (config.getBoolean("globalEnderChest"))
+			pm.registerEvents(new GlobalEnderChest(), this);
 
 	}
 
 	private void registerRecipes() {
 
 		if (config.getBoolean("customRecipes")) {
-			Server server = Bukkit.getServer();
+			Server server = getServer();
 
 			ShapelessRecipe flint = new ShapelessRecipe(new ItemStack(Material.FLINT));
 			flint.addIngredient(Material.GRAVEL);
@@ -92,36 +102,59 @@ public class Main extends JavaPlugin {
 			nametag.addIngredient(Material.IRON_INGOT);
 			server.addRecipe(nametag);
 
-			ShapedRecipe saddle = new ShapedRecipe(new ItemStack(Material.SADDLE));
-			saddle.shape("X X", "XXX");
-			saddle.setIngredient('X', Material.LEATHER);
-			server.addRecipe(saddle);
+			ShapedRecipe cobweb = new ShapedRecipe(new ItemStack(Material.WEB));
+			cobweb.shape("X X", " X ", "X X");
+			cobweb.setIngredient('X', Material.STRING);
+			server.addRecipe(cobweb);
 
-			Material ingredient = Material.IRON_FENCE;
+			ShapedRecipe barding = new ShapedRecipe(new ItemStack(Material.SADDLE));
+			barding.shape("  X", "XXX");
+			barding.setIngredient('X', Material.LEATHER);
+			server.addRecipe(barding);
+
+			barding = new ShapedRecipe(new ItemStack(Material.IRON_BARDING));
+			barding.shape("  X", "XXX");
+			barding.setIngredient('X', Material.IRON_INGOT);
+			server.addRecipe(barding);
+
+			barding = new ShapedRecipe(new ItemStack(Material.GOLD_BARDING));
+			barding.shape("  X", "XXX");
+			barding.setIngredient('X', Material.GOLD_INGOT);
+			server.addRecipe(barding);
+
+			barding = new ShapedRecipe(new ItemStack(Material.DIAMOND_BARDING));
+			barding.shape("  X", "XXX");
+			barding.setIngredient('X', Material.DIAMOND);
+			server.addRecipe(barding);
+
+			Material fence = Material.IRON_FENCE;
 
 			ItemStack helmet = new ItemStack(Material.CHAINMAIL_HELMET);
 			ShapedRecipe chainHelmet = new ShapedRecipe(helmet);
 			chainHelmet.shape("XXX", "X X");
-			chainHelmet.setIngredient('X', ingredient);
+			chainHelmet.setIngredient('X', fence);
 			server.addRecipe(chainHelmet);
 
 			ItemStack chestplate = new ItemStack(Material.CHAINMAIL_CHESTPLATE);
 			ShapedRecipe chainChestplate = new ShapedRecipe(chestplate);
 			chainChestplate.shape("X X", "XXX", "XXX");
-			chainChestplate.setIngredient('X', ingredient);
+			chainChestplate.setIngredient('X', fence);
 			server.addRecipe(chainChestplate);
 
 			ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS);
 			ShapedRecipe chainLeggings = new ShapedRecipe(leggings);
 			chainLeggings.shape("XXX", "X X", "X X");
-			chainLeggings.setIngredient('X', ingredient);
+			chainLeggings.setIngredient('X', fence);
 			server.addRecipe(chainLeggings);
 
 			ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS);
 			ShapedRecipe chainBoots = new ShapedRecipe(boots);
 			chainBoots.shape("X X", "X X");
-			chainBoots.setIngredient('X', ingredient);
+			chainBoots.setIngredient('X', fence);
 			server.addRecipe(chainBoots);
+
+			FurnaceRecipe leather = new FurnaceRecipe(new ItemStack(Material.LEATHER, 1), Material.ROTTEN_FLESH);
+			server.addRecipe(leather);
 		}
 	}
 

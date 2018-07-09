@@ -1,5 +1,7 @@
-version: 1.0
+version: 1.3.2
 name: TheFarside
+author: genandnic
+description: Goonimati inspired gameplay tweaks!
 main: com.genandnic.server.Main
 
 commands:
@@ -7,8 +9,6 @@ commands:
     description: Traps the specified player in bedrock
     usage: /encase <player>
     permission: Operator
-  kill:
-    description: Kills the player
   die:
     description: Kills the player
   suicide:

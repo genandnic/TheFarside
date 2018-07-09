@@ -14,17 +14,13 @@ public class Kill implements Listener {
 		Player player = event.getPlayer();
 		String message = event.getMessage().toLowerCase();
 
-		if (player.isOp() && message.startsWith("/kill")) {
-			event.setMessage(message.replace("/kill", "/minecraft:kill"));
-			return;
-		}
-
-		if (message.startsWith("/kill") || message.startsWith("/die") || message.startsWith("/suicide")) {
+		if ((!player.isOp() && message.startsWith("/kill")) || message.startsWith("/die") || message.startsWith("/suicide")) {
+			event.setCancelled(true);
 
 			player.damage(1);
 			player.setHealth(0.0);
 			return;
-			
+
 		}
 
 	}

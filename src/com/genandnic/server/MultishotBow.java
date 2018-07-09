@@ -1,19 +1,26 @@
 package com.genandnic.server;
 
+import java.util.Random;
+
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Arrow.PickupStatus;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TippedArrow;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionData;
 import org.bukkit.projectiles.ProjectileSource;
@@ -108,6 +115,25 @@ public class MultishotBow implements Listener {
 
 		}
 	}
+
+	@EventHandler
+	public void onVillagerLevelUp(VillagerAcquireTradeEvent event) {
+		Villager villager = event.getEntity();
+		if (villager.getProfession() == Profession.BLACKSMITH && random.nextInt(7) == 0) {
+
+			int level = Math.max(1, random.nextInt(4));
+
+			ItemStack result = new ItemStack(Material.BOW);
+			result.addUnsafeEnchantment(Enchantment.SWEEPING_EDGE, level);
+
+			MerchantRecipe recipe = new MerchantRecipe(result, 100);
+			recipe.addIngredient(new ItemStack(Material.EMERALD, level * 14));
+			event.setRecipe(recipe);
+
+		}
+	}
+
+	private final Random random = new Random();
 
 	private static Vector rotateYAxis(Vector dir, double angleD) {
 		double angleR = Math.toRadians(angleD);

@@ -4,7 +4,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -13,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -30,11 +30,9 @@ public class BombArrows implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		PlayerInventory inventory = event.getPlayer().getInventory();
-		if (inventory.getItemInMainHand().getType() == Material.BOW
-				&& inventory.getItemInOffHand().getType() == Material.TNT
+		if (inventory.getItemInMainHand().getType() == Material.BOW && inventory.getItemInOffHand().getType() == Material.TNT
 				&& (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-				&& (inventory.contains(Material.ARROW) || inventory.contains(Material.SPECTRAL_ARROW)
-						|| inventory.contains(Material.TIPPED_ARROW))) {
+				&& (inventory.contains(Material.ARROW) || inventory.contains(Material.SPECTRAL_ARROW) || inventory.contains(Material.TIPPED_ARROW))) {
 
 			event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_TNT_PRIMED, 1, 2);
 
@@ -59,28 +57,31 @@ public class BombArrows implements Listener {
 
 	@EventHandler
 	public void onHit(ProjectileHitEvent event) {
-		Entity entity = event.getEntity();
+		Entity arrow = event.getEntity();
 
-		if (entity.hasMetadata("bombArrow")) {
-			Entity arrow = entity;
-			Location location = arrow.getLocation().add(0, -1.15, 0);
-			World world = arrow.getWorld();
+		if (!arrow.hasMetadata("bombArrow"))
+			return;
 
-			Entity tnt = world.spawn(location, TNTPrimed.class);
+		Location location = arrow.getLocation().add(0, -1.15, 0);
 
-			tnt.setMetadata("bombArrowExplosion", new FixedMetadataValue(plugin, true));
-			((TNTPrimed) tnt).setFuseTicks(0);
-			arrow.remove();
+		Entity tnt = arrow.getWorld().spawn(location, TNTPrimed.class);
+		tnt.setMetadata("bombArrowExplosion", new FixedMetadataValue(plugin, true));
+		((TNTPrimed) tnt).setFuseTicks(0);
 
-		}
+		arrow.remove();
+
+	}
+
+	@EventHandler
+	public void onExplosionPrime(ExplosionPrimeEvent event) {
+		if (event.getEntity().hasMetadata("bombArrowExplosion"))
+			event.setRadius((float) plugin.getConfig().getDouble("bombArrowRadius"));
 	}
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		if (event.getEntity() instanceof Player && event.getDamager().hasMetadata("bombArrowExplosion")
-				&& event.getDamage() > 3) {
-			event.setDamage(3);
-		}
+		if (event.getEntity() instanceof Player && event.getDamager().hasMetadata("bombArrowExplosion") && event.getDamage() > 4)
+			event.setDamage(4);
 	}
 
 }

@@ -5,8 +5,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -39,11 +37,4 @@ public class LightningArrows implements Listener {
 			}
 		}
 	}
-
-	@EventHandler
-	public void onBlockIgnite(BlockIgniteEvent event) {
-		if (event.getCause() == IgniteCause.LIGHTNING)
-			event.setCancelled(true);
-	}
-
 }
