@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TheFarside" default="makejar" basedir=".">
+    <target name="makejar" description="Create a jar for the project.">
+    	<jar destfile="C:\Users\genandnic\Desktop\Minecraft\Server\plugins\update\${ant.project.name}.jar">
+            <fileset dir="bin"></fileset>
+        	<fileset file="config.yml"></fileset>
+			<fileset file="plugin.yml"></fileset>
+        </jar>
+    </target>
+</project>
